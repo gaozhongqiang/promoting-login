@@ -9,9 +9,122 @@ namespace Promoting\Login;
 class Login{
     //找回密码弹出页
     public static function getForgetPassHtml(){
+        $css = self::commonCss();
+        $js = self::commonJs();
+        $mobile_js = self::mobile();
+        $url = UrlRecombination("login/get_check_code",array());//发送验证码地址
+        $find_pass_url = UrlRecombination("login/find_pass",array());//短信找回地址
+        $check_code_url = UrlRecombination("login/check_code",array());//短信找回地址
+        $mmv_token = str_shuffle(ALIYUN_MMV_APP_KEY.time().ReturnRandomString(16));
+        $wait_time = PhoneWarningTime;//验证码等待时间
+        $ALIYUN_MMV_APP_KEY = ALIYUN_MMV_APP_KEY;
+        $ALIYUN_DATA_APP_JS = ALIYUN_DATA_APP_JS;
+        $random = mt_rand();
         $html = <<<EOF
-        <!--找回密码样式-->
+        {$css}
+        <script data-app="{$ALIYUN_DATA_APP_JS}" src="//g.alicdn.com/sd/pointman/js/pt.js"></script>
+	<script type="text/javascript" charset="utf-8" src="//g.alicdn.com/sd/ncpc/nc.js?t={$random}"></script>
+	<script src="/common/extends/aliyun.js?t={$random}" type="text/javascript"></script>
+	<link href="/common/extends/aliyun_mmv.css?t={$random}" rel="stylesheet" type="text/css" />
+
+<input type='hidden' id='afs_token' name='afs_token'/>
+			<input name="man_machine_verification_sig" value="" id="man_machine_verification_sig" type="hidden">
+			<input name="man_machine_verification_sessionid" value="" id="man_machine_verification_sessionid" type="hidden">
+			<input value="{$ALIYUN_MMV_APP_KEY}" id="appkey" type="hidden">
+			<input name="man_machine_verification_token" value="{$mmv_token}" id="man_machine_verification_token" type="hidden">
+			
+			<input name="code" value="" id="code" type="hidden">
+			<input name="phone" value="" id="phone" type="hidden">
+			<input name="promuser_id" value="" id="promuser_id" type="hidden">
+			<input name="encryString" value="" id="encryString" type="hidden">
+			<input id="find_pass_url" value="{$find_pass_url}">
+			<input id="check_code_url" value="{$check_code_url}">
+<!--忘记密码开始-->
+<div id="popDiv_hs" class="mydiv_tc_sc01" style="display: none">
+		<div class="miyu02">
+ 		 <div class="jiang02">
+			找回密码
+            <a href="javascript:closeDiv_hs()" class="close_dla">×</a>
+		</div>
+        <div class="jiang03">
+        	<input name="mobile" type="text" id="mobile" placeholder="请输入手机号码">
+        </div>
+        <div class="jiang03">
+        	<a href="javascript:;" class="yzm" dourl={$url} onclick = GetMobileCode(this,$wait_time,'return_profit_wait','return_profit_time_desc') actionType="check" codeType='find_password'>获取验证码</a>
+        	<div class="check_code_wait" id="return_profit_wait">等待(<span class="fontred" id="return_profit_time_desc">{$wait_time}</span>)</div> 
+        	<input name="temp_code" id="temp_code" type="text" placeholder="请输入验证码">
+        </div>
+        <div class="jiang0000" style="height: 30px">
+		    <label style="float: left;margin-top: 10px">人机验证：</label>
+		    <div id="man_machine_verification_show" class="nc-container" style="float: right;"></div>
+	   </div>
+<a href="javascript:;" onclick="javascript:showDiv_hs_mm()" class="close_dla00">提交</a> 
+ 		</div>
+	</div>
+<div id="bg_tctc" class="bg" style="display: none;"></div>
+<div id="popIframe" class="popIframe" frameborder="0" style="display: none;"></div>
+<!--忘记密码结束-->
+
+
+<!--找回密码弹出-->
+{$js}{$mobile_js}
+EOF;
+        return $html;
+    }
+    //推广联系人
+    public static function getPromuserQQHtml(){
+        $html = '';
+        if(defined('TgQQManage')){
+            $html .= '<div class="tgr">推广联系人<a href="http://wpa.qq.com/msgrd?v=3&uin='.TgQQManage.'&site=qq&menu=yes" target="_blank"><span><img src="/common/qq.png">'.TgQQManage.'</span></a></div>';
+        }
+        $html .=<<<EOF
+        <style type='text/css'>
+.tgr {
+	color: #fff;
+	font-size: 16px;
+	text-align: center;
+	height: 40px;
+	margin: 180px 0 0 0;
+}
+.tgr span {
+	background: #fff;
+	padding: 6px 10px;
+	border-radius: 10px;
+	margin: 0 0 0 10px;
+	color: #666;
+}
+.tgr span img {
+	width: 20px;
+	height: 22px;
+	vertical-align: middle;
+	padding: 0 0 4px 0;
+}
+.footer {padding-top:10px;line-height: 28px;text-align: center;height: 100px;color: #fff;width: 100%;margin: 0;}
+</style>
+EOF;
+    return $html;
+    }
+    //获取变动的css
+    public static function commonCss(){
+        $css = <<<EOF
+<!--找回密码样式-->
         <style type="text/css">
+        .check_code_wait {
+    width: 80px;
+    height: 32px;
+    line-height: 32px;
+    display: inline-block;
+    background: #000;
+    border-radius: 10px;
+    opacity: 0.7;
+    color: #fff;
+    text-align: center;
+    filter: alpha(opacity=70);
+    position: absolute;
+    right: 20px;
+    top: 19px;
+    display: none;
+}
         .zh {
     float: left;
     text-align: right;
@@ -56,7 +169,7 @@ class Login{
 .jiang03 span{ color:#333; font-size:1.3em; line-height:2em; color:#f90;}
 .jiang03 strong{ font-weight:bold; font-size:1.2em; color:#f90;}
 .jiang03{padding:0px 20px 0 30px; width:350px; margin:0 auto 15px auto; position:relative; background:#f5f5f5; border-radius:100px;}
-.jiang03 input{ border:none; background:#f5f5f5; height:65px; line-height:65px; width:250px; outline:none; font-size:18px;}
+.jiang03 input{ border:none; background:#f5f5f5; height:65px; line-height:65px; width:338px; outline:none; font-size:13px;}
 .jiang04{ margin:0px 0 50px 0; color:#999; font-size:18px; text-align:center;}
 .jiang04 img{ width:80px; height:auto; padding:50px 0 20px 0;}
 
@@ -108,61 +221,20 @@ _top:       expression(eval(document.compatMode &&
             document.body.scrollTop + (document.body.clientHeight - this.clientHeight)/2);
 			
 }  
+.jiang0000 {
+    padding: 0px 20px 0 30px;
+    width: 350px;
+    margin: 0 auto 15px auto;
+    position: relative;
+}
 </style>
-<!--忘记密码开始-->
-<div id="popDiv_hs" class="mydiv_tc_sc01" style="display: block;">
-	
-		<div class="miyu02">
- 		 <div class="jiang02">
-			找回密码
-            <a href="javascript:closeDiv_hs()" class="close_dla">×</a>
-		</div>
-        <div class="jiang03">
-        	<input name="" type="text" placeholder="请输入手机号码">
-        </div>
-        <div class="jiang03">
-        	<a href="#" class="yzm">获取验证码</a>
-        	<input name="" type="text" placeholder="请输入验证码">
-        </div>
-<a href="javascript:closeDiv_hs()" onclick="javascript:showDiv_hs_mm()" class="close_dla00">提交</a> 
- 		</div>
-	</div>
-<div id="bg_tctc" class="bg" style="display: block;"></div>
-<div id="popIframe" class="popIframe" frameborder="0" style="display: block;"></div>
-<!--忘记密码结束-->
-<!--重置密码开始-->
-<div id="popDiv_hs_mm" class="mydiv_tc_sc01" style="display: block;">
-	
-		<div class="miyu02">
- 		 <div class="jiang02">
-			重置密码
-            <a href="javascript:closeDiv_hs_mm()" class="close_dla">×</a>
-		</div>
-        <div class="jiang03">
-        	<input name="" type="text" placeholder="请输入密码">
-        </div>
-        <div class="jiang03">
-        	<input name="" type="text" placeholder="再次请输入密码">
-        </div>
-<a href="javascript:closeDiv_hs_mm()" onclick="javascript:showDiv_hs_mm_cg()" class="close_dla00">提交</a> 
- 		</div>
-	</div>
-	<div id="bg_tctc_mm" class="bg" style="display: block;"></div>
-	<div id="popIframe" class="popIframe" frameborder="0"></div>
-<!--重置密码结束-->
-<!--找回密码成功开始-->
-<div id="popDiv_hs_mm_cg" class="mydiv_tc_sc01" style="display: block;">
-	
-		<div class="miyu02">
- 		 <div class="jiang04">
-         <img src="images/mima.png"><br> 修改成功，以后就用这个密码登录 </div>
-<a href="javascript:closeDiv_hs_mm_cg()" class="close_dla00">关闭</a> 
- 		</div>
-	</div>
-	<div id="bg_tctc_mm_cg" class="bg" style="display: block;"></div>
-	<div id="popIframe" class="popIframe" frameborder="0"></div>
-<!--找回密码成功结束-->
-<!--找回密码弹出-->
+EOF;
+
+        return $css;
+    }
+    //获取变动的js
+    public static function commonJs(){
+        $js = <<<EOF
 <script type="text/javascript">
 //弹出页面
 function showDiv_hs(){
@@ -172,34 +244,181 @@ document.getElementById('bg_tctc').style.display='block';
 }
 //关闭页面
 function closeDiv_hs(){
-document.getElementById('popDiv_hs').style.display='none';
-document.getElementById('bg_tctc').style.display='none';
-document.getElementById('popIframe').style.display='none';
+    window.location.href = window.location.href;
 }
+//
 function showDiv_hs_mm(){
-document.getElementById('popDiv_hs_mm').style.display='block';
-document.getElementById('popIframe').style.display='block';
-document.getElementById('bg_tctc_mm').style.display='block';
+    var check_code=$("#temp_code").val(),url = $("#check_code_url").val();
+	if(!/^[0-9]{4,8}$/.test(check_code)){
+		alert('验证码格式错误！');
+		return false;
+	}
+	$("#code").val(check_code);
+	var phone = $("#mobile").val();
+	phone = phone.replace('\s+|\s+','')
+	if(phone == ''){
+	    alert('手机号错误')
+	    return false;
+	}
+	$.ajax({
+		'url':url,
+		'type':"POST",
+		'dataType':"JSON",
+		'data':"code="+$("#code").val()+"&phone="+$("#mobile").val(),
+		'success':function (returnData){
+			if(returnData.errorno==-1){
+				alert(returnData.data1);
+				return;
+			}
+		   $("#phone").val(phone);
+			$("#encryString").val(returnData.data1)
+	
+	var rewrite_pass = '<div class="miyu02"><div class="jiang02">重置密码<a href="javascript:closeDiv_hs();" class="close_dla">×</a></div>' +
+	 '<div class="jiang03"><input name="pass1" type="password" id="pass1" placeholder="请输入密码（长度6~12位，支持数字、字母、特殊符号）"></div>' +
+	 '<div class="jiang03"><input name="pass2" type="password" id="pass2" placeholder="再次请输入密码"></div>' +
+	 '<a href="javascript:;" onclick="javascript:find_pass()" class="close_dla00">提交</a> </div>'
+	$("#popDiv_hs").html(rewrite_pass);
+		}
+	});
+	
 }
-//关闭重置密码
-function closeDiv_hs_mm(){
-document.getElementById('popDiv_hs_mm').style.display='none';
-document.getElementById('bg_tctc_mm').style.display='none';
-document.getElementById('popIframe').style.display='none';
+
+</script>
+EOF;
+    return $js;
+    }
+    //密码找回
+    public static function mobile(){
+        $html = <<<EOF
+       <script type="text/javascript"> 
+       //发送短信验证码
+function GetMobileCode(_this,waitTime,wait_dom,time_desc){
+	var codeType=$(_this).attr("codeType"),actionType=$(_this).attr("actionType"),dourl=$(_this).attr("dourl"),
+	mobile = $("input[name='mobile']").val();
+	mobile = mobile.replace('\s+|\s+','')
+	if(mobile == ''){
+	    alert('请输入手机号！')
+	    return;
+	}
+	var nowindex=0;
+	$.ajax({
+		'url':dourl,
+		'type':"POST",
+		'dataType':"JSON",
+		'data':"actionType="+actionType+"&codeType="+codeType+"&mobile="+mobile+
+		"&man_machine_verification_sig="+$("input[name='man_machine_verification_sig']").val()+
+		"&man_machine_verification_sessionid="+$("input[name='man_machine_verification_sessionid']").val()+
+		"&man_machine_verification_token="+$("input[name='man_machine_verification_token']").val(),
+		'success':function (returnData){
+			if(returnData.errorno==-1){
+				alert(returnData.data1);
+				return false;
+			}
+			layer.msg('获取成功');
+			$("#mobile").attr("readonly","true");
+			$("#promuser_id").val(returnData.data1)
+			$(_this).hide();
+			$("#"+wait_dom).css("display","inline-block");
+			_this.timer=setInterval(function (){
+				nowindex++;
+				if(nowindex>waitTime){
+					clearInterval(_this.timer);
+					$("#"+wait_dom).hide();
+					$(_this).show();
+					return false;
+				}
+				$("#"+time_desc).html(waitTime-nowindex);
+			},1000);
+		}
+	});
 }
-//找回名密码成功
-function showDiv_hs_mm_cg(){
-document.getElementById('popDiv_hs_mm_cg').style.display='block';
-document.getElementById('popIframe').style.display='block';
-document.getElementById('bg_tctc_mm_cg').style.display='block';
-}
-function closeDiv_hs_mm_cg(){
-document.getElementById('popDiv_hs_mm_cg').style.display='none';
-document.getElementById('bg_tctc_mm_cg').style.display='none';
-document.getElementById('popIframe').style.display='none';
+//重置密码
+function find_pass() {
+  var url = $("#find_pass_url").val(),pass1 = $("input[name='pass1']").val(),pass2 = $("input[name='pass2']").val();
+  pass1 = pass1.replace('\s+|\s+','');
+  pass2 = pass2.replace('\s+|\s+','');
+  if(pass1 == '' || pass2 == ''){
+      alert('请输入密码或确认密码！');
+      return false;
+  }
+  if(!/^.{6,16}$/.test(pass1)){
+      alert('密码格式有误，请重新输入!');
+      return false;
+  }
+  
+  if(pass1 != pass2){
+      alert('两次输入的密码不一致，请检查！');
+      return false;
+  }
+  $.ajax({
+		'url':url,
+		'type':"POST",
+		'dataType':"JSON",
+		'data':"code="+$("#code").val()+"&phone="+$("#phone").val()+"&pass1="+$("#pass1").val()+
+		"&pass2="+$("#pass2").val()+"&promuser_id="+$("#promuser_id").val()+"&encryString="+$("#encryString").val(),
+		'success':function (returnData){
+			if(returnData.errorno==-1){
+				alert(returnData.data1);
+				window.location.href = window.location.href;
+				return;
+			}
+		    var success_html = '<div class="miyu02"><div class="jiang04">' +
+		     '<img src="/common/mima.png"><br>'+returnData.data1+'</div>' +
+		     '<a href="javascript:closeDiv_hs()" class="close_dla00">关闭</a> </div>';
+			$('#popDiv_hs').html(success_html);
+		}
+	});
 }
 </script>
 EOF;
-        return $html;
+    return $html;
+    }
+    public static function findPass($_this){
+        $code = $_this->method_post_value("code",1);
+        $phone = $_this->method_post_value("phone",1);
+        $pass1 = $_this->method_post_value("pass1");
+        $pass2 = $_this->method_post_value("pass2");
+        $promuser_id = $_this->method_post_value("promuser_id",1);
+        $encryString = $_this->method_post_value("encryString");
+        if(empty($code) || empty($phone) || empty($promuser_id) || empty($encryString)){
+            return array(-1,'请正常操作！');
+        }
+        if(empty($pass1) || empty($pass2)){
+            return array(-1,'密码不能为空！');
+        }
+        if(!preg_match("/^.{6,16}$/",$pass1)){
+            return array(-1,'密码格式有误，请重新输入！');
+        }
+        if($pass1 != $pass2){
+            return array(-1,'两次输入的密码不一致，请检查！');
+        }
+
+        
+
+        $_this->getmodel("Promuser_model");
+        $promuserData=$_this->Promuser_model->get_have_data(array("promuser_id='{$promuser_id}'"));
+        if(empty($promuserData)){
+            return array(-1,"账号信息不存在！");
+        }
+        if($promuserData['promuser_state'] == -1){
+            return array(-1,"很抱歉，此账号已被封禁！");
+        }
+        if($promuserData['promuser_phone'] != $phone){
+            return array(-1,'手机号信息错误！');
+        }
+
+        if(!FormatTokenVerify(array("phone"=>$promuserData["promuser_phone"],"promuser_id"=>$promuser_id),$encryString)){
+            return array(-1,"提交出错，不要进行非法提交工作！","no");
+        }
+        
+        $update_arr = array(
+            'lastupdatepwdtime' => time(),
+            'promuser_pwd' => PwdEncryption($pass1)
+        );
+        $ret=$_this->Promuser_model->update($update_arr,$promuser_id);
+        if($ret < 0){
+            return array(-1,'密码修改失败');
+        }
+        return array(0,$promuserData);
     }
 }
