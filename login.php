@@ -396,7 +396,7 @@ EOF;
         
 
         $_this->getmodel("Promuser_model");
-        $promuserData=$_this->Promuser_model->get_have_data(array("promuser_id='{$promuser_id}'"));
+        $promuserData=$_this->Promuser_model->get_have_data_relation(array_merge(Mobile::get_search_arr(),array("p.promuser_id='{$promuser_id}'")));
         if(empty($promuserData)){
             return array(-1,"账号信息不存在！");
         }
