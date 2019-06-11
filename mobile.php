@@ -4,8 +4,6 @@ namespace Promoting\Login;
 短信发送
  */
 class Mobile{
-    private static $codeType = array("find_password");
-    private static $actionType	= array("add","edit","check");
     private static $search_arr = array(
         'tg' => array("pg.promgroup_sign_type = -1"),
         'cp' => array("pg.promgroup_sign_type = 1"),
@@ -67,7 +65,7 @@ class Mobile{
             return array(-1,"很抱歉，此账号已被封禁");
         }
 
-        /*$cache_code_key = $mobile.'DefaultID';
+        $cache_code_key = $mobile.'DefaultID';
         $cache_verify_code = GetAllDomainCache($cache_code_key);
         if(empty($cache_verify_code)){
             return array(-1,'验证码已过期，请重新获取！');
@@ -75,7 +73,7 @@ class Mobile{
         if($cache_verify_code != $code){
             return array(-1,'验证码不正确！');
         }
-        DelAllDomainCache($cache_code_key);*/
+        DelAllDomainCache($cache_code_key);
         return array(0,FormTokenEncryption(array("phone"=>$mobile,"promuser_id"=>$promuserData["promuser_id"])));
     }
     public static function is_mobile_phone($phone){

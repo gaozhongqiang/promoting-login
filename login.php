@@ -20,12 +20,13 @@ class Login{
         $ALIYUN_MMV_APP_KEY = ALIYUN_MMV_APP_KEY;
         $ALIYUN_DATA_APP_JS = ALIYUN_DATA_APP_JS;
         $random = mt_rand();
+        $dir_name = 'vendor/promoting/login';
         $html = <<<EOF
         {$css}
         <script data-app="{$ALIYUN_DATA_APP_JS}" src="//g.alicdn.com/sd/pointman/js/pt.js"></script>
 	<script type="text/javascript" charset="utf-8" src="//g.alicdn.com/sd/ncpc/nc.js?t={$random}"></script>
-	<script src="/common/extends/aliyun.js?t={$random}" type="text/javascript"></script>
-	<link href="/common/extends/aliyun_mmv.css?t={$random}" rel="stylesheet" type="text/css" />
+	<script src="{$dir_name}/src/extends/aliyun.js?t={$random}" type="text/javascript"></script>
+	<link href="{$dir_name}/src/extends/aliyun_mmv.css?t={$random}" rel="stylesheet" type="text/css" />
 
 <input type='hidden' id='afs_token' name='afs_token'/>
 			<input name="man_machine_verification_sig" value="" id="man_machine_verification_sig" type="hidden">
@@ -37,8 +38,8 @@ class Login{
 			<input name="phone" value="" id="phone" type="hidden">
 			<input name="promuser_id" value="" id="promuser_id" type="hidden">
 			<input name="encryString" value="" id="encryString" type="hidden">
-			<input id="find_pass_url" value="{$find_pass_url}">
-			<input id="check_code_url" value="{$check_code_url}">
+			<input id="find_pass_url" value="{$find_pass_url}" type="hidden">
+			<input id="check_code_url" value="{$check_code_url}" type="hidden">
 <!--忘记密码开始-->
 <div id="popDiv_hs" class="mydiv_tc_sc01" style="display: none">
 		<div class="miyu02">
@@ -75,7 +76,7 @@ EOF;
     public static function getPromuserQQHtml(){
         $html = '';
         if(defined('TgQQManage')){
-            $html .= '<div class="tgr">推广联系人<a href="http://wpa.qq.com/msgrd?v=3&uin='.TgQQManage.'&site=qq&menu=yes" target="_blank"><span><img src="/common/qq.png">'.TgQQManage.'</span></a></div>';
+            $html .= '<div class="tgr">推广联系人<a href="http://wpa.qq.com/msgrd?v=3&uin='.TgQQManage.'&site=qq&menu=yes" target="_blank"><span><img src="vendor/promoting/login/src/qq.png">'.TgQQManage.'</span></a></div>';
         }
         $html .=<<<EOF
         <style type='text/css'>
@@ -84,7 +85,7 @@ EOF;
 	font-size: 16px;
 	text-align: center;
 	height: 40px;
-	margin: 180px 0 0 0;
+	margin: 120px 0 0 0;
 }
 .tgr span {
 	background: #fff;
@@ -363,7 +364,7 @@ function find_pass() {
 				return;
 			}
 		    var success_html = '<div class="miyu02"><div class="jiang04">' +
-		     '<img src="/common/mima.png"><br>'+returnData.data1+'</div>' +
+		     '<img src="vendor/promoting/login/src/mima.png"><br>'+returnData.data1+'</div>' +
 		     '<a href="javascript:closeDiv_hs()" class="close_dla00">关闭</a> </div>';
 			$('#popDiv_hs').html(success_html);
 		}

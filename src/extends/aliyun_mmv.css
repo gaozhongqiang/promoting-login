@@ -1,0 +1,19 @@
+ .nc_scale {
+    background: #e8e8e8 !important;
+    /* 默认背景色 */
+  }
+  .nc_scale div.nc_bg {
+    background: #7ac23c !important;
+    /* 滑过时的背景色 */
+  }
+  .nc_scale .scale_text2 {
+    color: #fff !important;
+    /* 滑过时的字体颜色 */
+  }
+  .nc_scale span {
+    border: 1px solid #ccc !important;
+  }
+  .errloading {
+    border: #faf1d5 1px solid !important;
+    color: #ef9f06 !important;
+  }
