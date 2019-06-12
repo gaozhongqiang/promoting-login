@@ -70,7 +70,7 @@ class Mobile{
         if(empty($cache_verify_code)){
             return array(-1,'验证码已过期，请重新获取！');
         }
-        if($cache_verify_code != $code){
+        if($cache_verify_code != $phonecode){
             return array(-1,'验证码不正确！');
         }
         DelAllDomainCache($cache_code_key);
