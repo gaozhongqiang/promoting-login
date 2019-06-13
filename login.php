@@ -20,13 +20,13 @@ class Login{
         $ALIYUN_MMV_APP_KEY = ALIYUN_MMV_APP_KEY;
         $ALIYUN_DATA_APP_JS = ALIYUN_DATA_APP_JS;
         $random = mt_rand();
-        $dir_name = 'vendor/promoting/login';
+        $dir_name = WebSite.'/vendor/promoting/login';
         $html = <<<EOF
         {$css}
         <script data-app="{$ALIYUN_DATA_APP_JS}" src="//g.alicdn.com/sd/pointman/js/pt.js"></script>
 	<script type="text/javascript" charset="utf-8" src="//g.alicdn.com/sd/ncpc/nc.js?t={$random}"></script>
 	<script src="{$dir_name}/src/extends/aliyun.js?t={$random}" type="text/javascript"></script>
-	<link href="{$dir_name}/src/extends/aliyun_mmv.css?t={$random}" rel="stylesheet" type="text/css" />
+	<link href="{$dir_name}/src/extends/aliyun_mmv.css?t={$random}" rel="stylesheet" type="text/javascript" />
 
 <input type='hidden' id='afs_token' name='afs_token'/>
 			<input name="man_machine_verification_sig" value="" id="man_machine_verification_sig" type="hidden">
@@ -76,7 +76,7 @@ EOF;
     public static function getPromuserQQHtml(){
         $html = '';
         if(defined('TgQQManage')){
-            $html .= '<div class="tgr">推广联系人<a href="http://wpa.qq.com/msgrd?v=3&uin='.TgQQManage.'&site=qq&menu=yes" target="_blank"><span><img src="vendor/promoting/login/src/qq.png">'.TgQQManage.'</span></a></div>';
+            $html .= '<div class="tgr">推广联系人<a href="http://wpa.qq.com/msgrd?v=3&uin='.TgQQManage.'&site=qq&menu=yes" target="_blank"><span><img src="'.WebSite.'/vendor/promoting/login/src/qq.png">'.TgQQManage.'</span></a></div>';
         }
         $html .=<<<EOF
         <style type='text/css'>
@@ -297,6 +297,7 @@ function GetMobileCode(_this,waitTime,wait_dom,time_desc){
 	var codeType=$(_this).attr("codeType"),actionType=$(_this).attr("actionType"),dourl=$(_this).attr("dourl"),
 	mobile = $("input[name='mobile']").val();
 	mobile = mobile.replace('\s+|\s+','')
+	
 	if(mobile == ''){
 	    alert('请输入手机号！')
 	    return;
@@ -351,6 +352,7 @@ function find_pass() {
       alert('两次输入的密码不一致，请检查！');
       return false;
   }
+  
   $.ajax({
 		'url':url,
 		'type':"POST",
@@ -363,8 +365,9 @@ function find_pass() {
 				window.location.href = window.location.href;
 				return;
 			}
+			var server_name = window.location.protocol+'//'+window.location.hostname;
 		    var success_html = '<div class="miyu02"><div class="jiang04">' +
-		     '<img src="vendor/promoting/login/src/mima.png"><br>'+returnData.data1+'</div>' +
+		     '<img src="'+server_name+'/vendor/promoting/login/src/mima.png"><br>'+returnData.data1+'</div>' +
 		     '<a href="javascript:closeDiv_hs()" class="close_dla00">关闭</a> </div>';
 			$('#popDiv_hs').html(success_html);
 		}
