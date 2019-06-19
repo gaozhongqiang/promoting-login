@@ -250,8 +250,13 @@ function closeDiv_hs(){
 //
 function showDiv_hs_mm(){
     var check_code=$("#temp_code").val(),url = $("#check_code_url").val();
+    check_code = check_code.replace('\s+|\s+','');
+    if(check_code == ''){
+        alert('请输入验证码！');
+		return false;
+    }
 	if(!/^[0-9]{4,8}$/.test(check_code)){
-		alert('验证码格式错误！');
+		alert('验证码错误，请重新输入！');
 		return false;
 	}
 	$("#code").val(check_code);

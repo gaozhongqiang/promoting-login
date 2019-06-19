@@ -71,7 +71,7 @@ class Mobile{
             return array(-1,'验证码已过期，请重新获取！');
         }
         if($cache_verify_code != $phonecode){
-            return array(-1,'验证码不正确！');
+            return array(-1,'验证码错误，请重新输入！');
         }
         DelAllDomainCache($cache_code_key);
         return array(0,FormTokenEncryption(array("phone"=>$mobile,"promuser_id"=>$promuserData["promuser_id"])));
