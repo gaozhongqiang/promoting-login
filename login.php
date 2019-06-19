@@ -275,7 +275,7 @@ function showDiv_hs_mm(){
 			$("#encryString").val(returnData.data1)
 	
 	var rewrite_pass = '<div class="miyu02"><div class="jiang02">重置密码<a href="javascript:closeDiv_hs();" class="close_dla">×</a></div>' +
-	 '<div class="jiang03"><input name="pass1" type="password" id="pass1" placeholder="请输入密码（长度6~12位，支持数字、字母、特殊符号）"></div>' +
+	 '<div class="jiang03"><input name="pass1" type="password" id="pass1" placeholder="请输入密码（长度6~16位，支持数字、字母、特殊符号）"></div>' +
 	 '<div class="jiang03"><input name="pass2" type="password" id="pass2" placeholder="再次请输入密码"></div>' +
 	 '<a href="javascript:;" onclick="javascript:find_pass()" class="close_dla00">提交</a> </div>'
 	$("#popDiv_hs").html(rewrite_pass);
@@ -360,10 +360,13 @@ function find_pass() {
 		'data':"code="+$("#code").val()+"&phone="+$("#phone").val()+"&pass1="+$("#pass1").val()+
 		"&pass2="+$("#pass2").val()+"&promuser_id="+$("#promuser_id").val()+"&encryString="+$("#encryString").val(),
 		'success':function (returnData){
-			if(returnData.errorno==-1){
+			if(returnData.errorno!=0){
 				alert(returnData.data1);
-				window.location.href = window.location.href;
-				return;
+				if(returnData.errorno == -2){
+				     window.location.href = window.location.href;
+				     return false;
+				} 
+				return false;
 			}
 			var server_name = window.location.protocol+'//'+window.location.hostname;
 		    var success_html = '<div class="miyu02"><div class="jiang04">' +
@@ -412,7 +415,7 @@ EOF;
         }
 
         if(!FormatTokenVerify(array("phone"=>$promuserData["promuser_phone"],"promuser_id"=>$promuser_id),$encryString)){
-            return array(-1,"提交出错，不要进行非法提交工作！","no");
+            return array(-2,"提交出错，不要进行非法提交工作！","no");
         }
         
         $update_arr = array(
