@@ -433,4 +433,24 @@ EOF;
         }
         return array(0,$promuserData);
     }
+
+    /**限制登陆
+     * @param object $_this
+     * @param int $promgroup_type
+     * @return bool
+     */
+    public static function limit($_this,$promgroup_type = 0,$show_type = 1){
+        try{
+            if(empty($promgroup_type)){
+                throw new \Exception('推广组类型不能为空');
+            }
+            if(!in_array($promgroup_type,array(1,2,4))){
+                throw new \Exception('对应推广组限制登陆');
+            }
+            return true;
+        }catch (\Exception $exception){
+            $_this->session->sess_destroy();
+            $show_type == 1 ? $_this->adminMsg($exception->getMessage(),'no',UrlRecombination("login/index",array())) : ReturnAjaxData(-1,$exception->getMessage());
+        }
+    }
 }
